@@ -3,24 +3,26 @@
 
 Đầu tiên sẽ nói về phân loại nhị phân, chọn 2 đặc trưng mạnh nhất là weight và height để phân loại 2 nhãn 1 và 5. Nhìn biểu đồ phân bố dữ lieu ta có thể thấy rang dữ lieu này là phân tách tuyến tính hoàn toàn, ko có nhiễu hay bất kỳ sự chồng chéo nào cả. 
 
-Sẽ dung 2 cách để thực hiện phân loại bài toán này. Cách đầu tiên là SoftMax Regression, cách thứ 2 là Hard Margin SVM. Đối với tất cả các bài toán phân loại dung SoftMax Regression sẽ thực hiện chọn ..... (xem lại),.... Còn về Hard Margin SVM cũng sẽ được lựa chọn vì dữ lieu tách biệt tuyến tính hoàn toàn, Hard Margin có thể dễ dàng thực hiện phân loại.
+(Ảnh phân bố dữ liệu đc chọn)
+
+Sẽ dùng 2 cách để thực hiện phân loại bài toán này. Cách đầu tiên là SoftMax Regression, cách thứ 2 là Hard Margin SVM. Đối với tất cả các bài toán phân loại dung SoftMax Regression sẽ thực hiện chọn Cgrostich descent (xem lại công thức),.... Còn về Hard Margin SVM cũng sẽ được lựa chọn vì dữ lieu tách biệt tuyến tính hoàn toàn, Hard Margin có thể dễ dàng thực hiện phân loại.
 
 Bài toán hard margin trong SVM có thể được giải bằng cách chuyển sang bài toán đối ngẫu (dual problem). Việc này giúp dễ dàng hơn khi giải quyết bài toán, đặc biệt khi số lượng các đặc trưng (features) rất lớn so với số lượng các điểm dữ liệu, vì khi chuyển sang bài toán đối ngẫu, chúng ta sẽ làm việc với ma trận nhân chéo giữa các điểm dữ liệu, thay vì làm việc trực tiếp với vector trọng số w.
 
-(Show ảnh chụp kết quả phân loại)
+(Show ảnh chụp kết quả phân loại, ở đây chèn 2 ảnh nằm cùng 1 hàng nhé)
 
 Cả 2 mô hình đều cho ra kết quả đúng, chính xác ngang nhau = 100%. Điều này là dễ hiểu vì dữ liệu input tách biệt tuyến tính hoàn toàn. Mặc dù không đáng kể, nhưng khi thực hiện Softmax Regression trên bộ dữ liệu này thì tốc độ thực thi, huấn luyện của Softmax Regression lại nhanh hơn Hard Margin. Diều này tại vì với dữ liệu đơn giản như trên, Softmax hội tụ nhanh vì gradient được tính dễ dàng và bài toán không phức tạp (Công thức Softmax Regression)
 Trong khi đó Hard Margin cần tính toán bài  toán tối ưu hóa có ràng buộc, phải tìm biên tối ưu dẫn đến phải xem xét toàn bộ điểm dữ liệu thay vì chỉ tối ưu trọng số trực tiếp. (Đưa ra công thức tính toán Margin để gợi ý hỏi về cách giải, sẽ giải bằng phương pháp đối ngẫu).
 
-Phần tiếp theo sẽ nói: Tuy nhiên dữ liệu bài toán của chúng ta lại không đơn giản như vậy, dữ liệu sẽ gồm tận (...) chiều và (...) nhãn đầu ra.
+Phần tiếp theo sẽ nói: Tuy nhiên dữ liệu bài toán của chúng ta lại không đơn giản như vậy, dữ liệu sẽ gồm tận 23 chiều và 7 nhãn đầu ra.
 
-(Show ảnh trực quan hóa 2 chiều một phức tạp)
+(Show ảnh trực quan hóa 2 chiều một, chỗ này có 4 ảnh, bạn chỉnh sao cho 2 ảnh trên cùng 1 dòng)
 
 Và còn phức tạp hơn ở chỗ là dữ liệu không tách biệt tuyến tính mà là phi tuyến, với nhiều nhiễu cũng như các điểm ngoại lai. Lúc này sẽ ko sử dụng đc SVM thuần, hay còn gọi là Hard Margin nữa, thay vào đấy ta sẽ có multi class SVM.
 
 2 cách tiếp cận SVM multi class
 
-Sau khi đưa vê bafi toddoon ói ngẫu, sẽ giải bang thư viện CVXOPT tìm ra các nhân tử Lagrange (đại diện cho mức độ quan trọng cho từng iểm dữ lieu). Từ các nhân tử đó (ei), ta tính dc:
+Sau khi đưa vêf bài toán đối ngẫu, sẽ giải bang thư viện CVXOPT tìm ra các nhân tử Lagrange (đại diện cho mức độ quan trọng cho từng iểm dữ lieu). Từ các nhân tử đó (ei), ta tính dc:
 Trọng số w = i=1 -> N (ei.xi.yi)
 bias = yk - i=1 -> N ei.yi.<xi, xk> (là tích vô hướng, tích lớn nghĩa là vector gần nhau trong không gian đặc trưng, và ngược lại).
 bias giúp mô hình tạo ra siêu phẳng phân loại tối ưu mà ko bị giới hạn bởi dữ liệu.
@@ -28,6 +30,17 @@ One-vs-Rest (OvR) là một phương pháp mở rộng của SVM để giải qu
 
 One-vs-One là Chuyển bài toán K lớp thành K(K-1)/2 bài toán phân loại nhị phân. Mỗi bộ phân loại sẽ dự đoán 1 class cho mỗi điểm dữ liệu, class nào có số phiếu nhiều nhất sẽ là nhãn cho điểm dữ liệu đó. Khi xảy ra trường hợp số phiếu bầu giữa các lớp bằng nhau sẽ tính decicion function và chọn hàm có điểm tin cậy cao nhất làm nhãn dự đoán cho điểm đó
 
+idea cơ bản của Kernel nói chung là là tìm một phép biến đổi sao cho dữ liệu ban đầu là không phân biệt tuyến tính được biến sang không gian mới. Ở không gian mới này, dữ liệu trở nên phân biệt tuyến tính.
 
+* Kernel Linear vs RBF:
+trong không gian nhiều chiều, với nhiều features, Khoảng cách giữa các điểm trong không gian nhiều chiều trở nên ít có ý nghĩa, và sự khác biệt giữa các điểm dữ liệu không còn rõ rang. (Công thức kernel RBF, trong đó xi-xj ^2 là khoảng cách Euclid). Trong không gian nhiều chiều, khoảng cách giữa các point trở nên rất lớn và nằm xa nhau, từ đó khiến việc phân biệt các point ko còn rõ rang.
+Còn kernel Linear hiệu quả hơn vì khi dung trong không gian nhiều chiều hơn thì dữ lieu có thể phân tách tốt hơn = 1 biên, trong ko gian nheiefu chiều, dữ lieu có thể đã đủ độc lập và ko có sự chồng lấn quá nhiều. Việc tính toán khoảng cách giwuxa các iểm đơn giản hơn, tránh các vấnề liên quan  chọn tham số trong kernel RBF.
+
+Sau khi ap dung mô hình multi class SVM với kernel Linear và 2 cách tiếp cận OvO và OvR, sẽ đưa ra 2 kết quả hiệu suất gần như tương duong với nhau, 
+
+
+dicision function trong bài toán phân loại nhiều lớp sẽ có công thức:
+fi(x) = wTi . xi + bi.
+Decision function cho mỗi SVM sẽ tính toán mức độ tin cậy của đối tượng thuộc về lớp đó. Kết quả phân loại sẽ là lớp mà decision function của SVM đó có giá trị cao nhất.
 
 
